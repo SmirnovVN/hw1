@@ -6,6 +6,11 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+/**
+ * Writable Pair
+ * @param <K> first in pair
+ * @param <V> second in pair
+ */
 public class Pair<K extends Writable,V extends Writable> implements Writable{
 
 

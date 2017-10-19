@@ -12,7 +12,11 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-
+/**
+ * Program which count average bytes per request by IP and total bytes by IP
+ * Output Format: SequenceFile with Snappy encoding
+ * Additional Requirements: Counters is used for statistics about malformed rows collection
+ */
 public class HW1 {
 
     public static void main(String[] args) throws Exception {

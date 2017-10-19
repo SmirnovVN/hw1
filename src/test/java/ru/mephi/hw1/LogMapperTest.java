@@ -2,7 +2,10 @@ package ru.mephi.hw1;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.Counters;
+import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,7 +26,14 @@ public class LogMapperTest {
                     "\"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.16) Gecko/20110319 Firefox/3.6.16\""),
             new Text("ip2 - - [24/Apr/2011:04:20:11 -0400] \"GET /sun_ss5/pdf.gif HTTP/1.1\" 200 390 " +
                     "\"http://host2/sun_ss5/\" \"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.16) " +
-                    "Gecko/20110319 Firefox/3.6.16\"")
+                    "Gecko/20110319 Firefox/3.6.16\""),
+            new Text("ip2  - [24/Apr/2011:04:20:11 -0400] \"GET /sun_ss5/pdf.gif HTTP/1.1\" 200 390 " +
+                    "\"http://host2/sun_ss5/\" \"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.16) " +
+                    "Gecko/20110319 Firefox/3.6.16\""),
+            new Text("ip2 - - [24/Apr/2011:04:20:11 -0400] \"GET /sun_ss5/pdf.gif HTTP/1.1\" 200 fty " +
+                    "\"http://host2/sun_ss5/\" \"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.16) " +
+                    "Gecko/20110319 Firefox/3.6.16\""),
+            new Text("Hi, Mr. Rovnyagin! Let's get it!")
     };
 
     private static Text[] ips = {
@@ -45,8 +55,11 @@ public class LogMapperTest {
     public void testWriteInContext() throws IOException, InterruptedException {
         LogMapper mapper = new LogMapper();
         Mapper.Context context = mock(Mapper.Context.class);
+        Counter counter = new Counters.Counter();
+        when(context.getCounter(anyString(), anyString())).thenReturn(counter);
         mapper.map(new LongWritable(1), logs[0], context);
         verify(context, times(1)).write(any(Text.class), any(LongWritable.class));
+        Assert.assertEquals(1, counter.getValue());
     }
 
     @Test
@@ -54,9 +67,28 @@ public class LogMapperTest {
     public void testWriteCorrectValues() throws IOException, InterruptedException {
         LogMapper mapper = new LogMapper();
         Mapper.Context context = mock(Mapper.Context.class);
-        for (int i = 0; i < logs.length; i++) {
+        Counter counter = new Counters.Counter();
+        when(context.getCounter(anyString(), anyString())).thenReturn(counter);
+        for (int i = 0; i < ips.length; i++) {
             mapper.map(new LongWritable(1), logs[i], context);
             verify(context).write(ips[i], sizes[i]);
         }
+        Assert.assertEquals(4, counter.getValue());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testInvalidInput() throws IOException, InterruptedException {
+        LogMapper mapper = new LogMapper();
+        Mapper.Context context = mock(Mapper.Context.class);
+        Counter invalid = new Counters.Counter();
+        when(context.getCounter(Log.class.getName(), Log.INVALID.name())).thenReturn(invalid);
+        Counter valid = new Counters.Counter();
+        when(context.getCounter(Log.class.getName(), Log.VALID.name())).thenReturn(valid);
+        for (Text log : logs) {
+            mapper.map(new LongWritable(1), log, context);
+        }
+        Assert.assertEquals(4, valid.getValue());
+        Assert.assertEquals(3, invalid.getValue());
     }
 }

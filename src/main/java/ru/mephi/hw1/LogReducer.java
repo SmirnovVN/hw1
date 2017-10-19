@@ -8,6 +8,13 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 
 public class LogReducer extends Reducer<Text,LongWritable,Text,Pair<FloatWritable, LongWritable>> {
+
+    /**
+     * Writes ip on average request size and total request size to context on each ip address
+     * @param key ip address
+     * @param values request sizes
+     * @param context mr context
+     */
     @Override
     public void reduce(Text key, Iterable<LongWritable> values, Context context) throws InterruptedException, IOException {
         long sum = 0;
