@@ -13,10 +13,31 @@ public class LogMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
     protected void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
         String line = value.toString();
-        Text ip = new Text(line.substring(0, line.indexOf(" - - ")));
+        if (isValid(line)) {
+            context.write(parseIp(line), parseSize(line));
+        } else {
+            System.out.println("");
+        }
+    }
+
+    private boolean isValid(String line) {
+        boolean hasSize;
+        try {
+            parseSize(line);
+            hasSize = true;
+        } catch (Exception e) {
+            hasSize = false;
+        }
+        return line.contains(" - - ") && hasSize;
+    }
+
+    private Text parseIp(String line) {
+        return new Text(line.substring(0, line.indexOf(" - - ")));
+    }
+
+    private LongWritable parseSize(String line) {
         int i = line.indexOf("HTTP/1.1\" ") + 14;
-        LongWritable size = new LongWritable(Long.parseLong(line.substring(
+        return new LongWritable(Long.parseLong(line.substring(
                 i, line.indexOf(' ', i))));
-        context.write(ip, size);
     }
 }
