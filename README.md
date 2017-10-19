@@ -2,15 +2,15 @@
 #####requirements
 - Cloudera QuickStart VMs CDH 5.12
 - 64-bit host OS and a virtualization product that can support a 64-bit guest OS
-- 8+ GiB
+- 8+ GiB RAM
 #####build
 `mvn clean package`
 #####prepare input
-`prepare.sh my_file_path`
+`prepare.sh my_file_path hdfs_working_dir`
 #####run
-`run.sh`
+`run.sh hdfs_working_dir`
 #####view output
-`view.sh`
+`view.sh hdfs_working_dir`
 #####links
 https://docs.microsoft.com/ru-ru/azure/hdinsight/hdinsight-develop-deploy-java-mapreduce-linux
 

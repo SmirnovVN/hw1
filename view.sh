@@ -1,1 +1,1 @@
-hdfs dfs -cat /output/*
+hdfs dfs -text $1/output/*

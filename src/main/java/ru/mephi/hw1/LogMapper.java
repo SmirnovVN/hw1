@@ -8,7 +8,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 
 
-public class LogMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
+public class LogMapper extends Mapper<Object, Text, Text, LongWritable> {
 
     /**
      * Writes ip on request size to context on each log line
@@ -17,7 +17,7 @@ public class LogMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
      * @param context mr context
      */
     @Override
-    protected void map(LongWritable key, Text value, Context context)
+    protected void map(Object key, Text value, Context context)
             throws IOException, InterruptedException {
         String line = value.toString();
         if (isValid(line)) {

@@ -1,6 +1,5 @@
 package ru.mephi.hw1;
 
-import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -25,7 +24,7 @@ public class LogReducerTest {
 
     private static List<List<LongWritable>> sizes = new ArrayList<>();
 
-    private static List<Pair<FloatWritable,LongWritable>> result = new ArrayList<>();
+    private static List<Text> result = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -35,10 +34,8 @@ public class LogReducerTest {
         sizes.get(0).add(new LongWritable(6244));
         sizes.get(1).add(new LongWritable(14917));
         sizes.get(1).add(new LongWritable(390));
-        result.add(new Pair<>(
-                new FloatWritable((40028 + 6244)/2), new LongWritable(40028 + 6244)));
-        result.add(new Pair<>(
-                new FloatWritable((14917 + 390)/2), new LongWritable(14917 + 390)));
+        result.add(new Text((40028 + 6244)/2 + "," + new LongWritable(40028 + 6244)));
+        result.add(new Text((14917 + 390)/2 + "," + new LongWritable(14917 + 390)));
     }
 
     @Test
@@ -47,7 +44,7 @@ public class LogReducerTest {
         LogReducer reducer = new LogReducer();
         Reducer.Context context = mock(Reducer.Context.class);
         reducer.reduce(ips[0], sizes.get(0), context);
-        verify(context, times(1)).write(any(Text.class), any(Pair.class));
+        verify(context, times(1)).write(any(Text.class), any(Text.class));
     }
 
     @Test

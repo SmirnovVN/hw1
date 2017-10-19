@@ -1,13 +1,12 @@
 package ru.mephi.hw1;
 
-import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
-public class LogReducer extends Reducer<Text,LongWritable,Text,Pair<FloatWritable, LongWritable>> {
+public class LogReducer extends Reducer<Text,LongWritable,Text,Text> {
 
     /**
      * Writes ip on average request size and total request size to context on each ip address
@@ -23,6 +22,6 @@ public class LogReducer extends Reducer<Text,LongWritable,Text,Pair<FloatWritabl
             sum += val.get();
             count++;
         }
-        context.write(key, new Pair<>(new FloatWritable(sum/count), new LongWritable(sum)));
+        context.write(key, new Text(sum/count + "," + sum));
     }
 }

@@ -3,11 +3,11 @@ package ru.mephi.hw1;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.SnappyCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
@@ -31,10 +31,12 @@ public class HW1 {
         job.setJarByClass(HW1.class);
         job.setMapperClass(LogMapper.class);
         job.setReducerClass(LogReducer.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Pair.class);
 
-        job.setInputFormatClass(KeyValueTextInputFormat.class);
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(LongWritable.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
+
         job.setOutputFormatClass(SequenceFileOutputFormat.class);
         FileOutputFormat.setCompressOutput(job, true);
         FileOutputFormat.setOutputCompressorClass(job, SnappyCodec.class);
