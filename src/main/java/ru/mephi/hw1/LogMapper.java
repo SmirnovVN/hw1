@@ -20,28 +20,12 @@ public class LogMapper extends Mapper<Object, Text, Text, LongWritable> {
     protected void map(Object key, Text value, Context context)
             throws IOException, InterruptedException {
         String line = value.toString();
-        if (isValid(line)) {
+        try {
             context.write(parseIp(line), parseSize(line));
             context.getCounter(Log.class.getName(), Log.VALID.name()).increment(1);
-        } else {
+        } catch (Exception e) {
             context.getCounter(Log.class.getName(), Log.INVALID.name()).increment(1);
         }
-    }
-
-    /**
-     * Line validation
-     * @param line - line to parse
-     * @return true if line contains ip and request size
-     */
-    private boolean isValid(String line) {
-        boolean hasSize;
-        try {
-            parseSize(line);
-            hasSize = true;
-        } catch (Exception e) {
-            hasSize = false;
-        }
-        return line.contains(" - - ") && hasSize;
     }
 
     /**
